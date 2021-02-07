@@ -18,6 +18,12 @@ export function dijkstras(nodes) {
     //Sort the nodes left to visited by distance and get the smallest value
     const closestNode = sortNodesByDistance(nodesYetToVisit).shift();
 
+    //If closest node is at Infinity(impossible to get to final node), just return
+    if (closestNode.distance === Infinity) return visitedNodesInOrder;
+
+    //If closest node is a wall, ignore
+    if (closestNode.isWall) continue;
+
     //Finished
     if (closestNode === endNode) {
       console.log("Success");

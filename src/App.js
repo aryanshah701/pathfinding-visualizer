@@ -130,6 +130,8 @@ function PathGrid() {
                   isFinish={node.isFinish}
                   isVisited={node.isVisited}
                   isWall={node.isWall}
+                  row={node.row}
+                  column={node.column}
                   handleMouseUp={handleMouseUp}
                   handleMouseDown={handleMouseDown}
                   handleMouseEnter={handleMouseEnter}
@@ -177,19 +179,41 @@ function createNode(row, col) {
 
 //Represents a single node/grid square in the grid
 function Node(props) {
+  //Props passed down
   const {
     isStart,
     isFinish,
     isVisited,
+    row,
+    column,
     isWall,
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
   } = props;
-  const nodeTypeClass = isStart ? "start-node" : isFinish ? "end-node" : "";
+
+  //Figure out node's css class based on which type of node it is
+  const nodeTypeClass = isStart
+    ? "start-node"
+    : isFinish
+    ? "end-node"
+    : isWall
+    ? "wall-node"
+    : "";
+
+  //Add on the visited css class if node has been visited(during animation)
   const visitedClass = isVisited ? "visited" : "";
   const className = "column-2 node " + nodeTypeClass + " " + visitedClass;
-  return <div className={className}></div>;
+
+  //Render node
+  return (
+    <div
+      className={className}
+      onMouseDown={() => handleMouseDown(row, column)}
+      onMouseEnter={() => handleMouseEnter(row, column)}
+      onMouseUp={() => handleMouseUp(row, column)}
+    ></div>
+  );
 }
 
 export default App;

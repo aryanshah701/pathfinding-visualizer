@@ -105,8 +105,10 @@ function PathGrid() {
         updatedNodes[currNode.row][currNode.column] = updatedNode;
 
         //Update state
-        setNodes(updatedNodes);
-      }, i);
+        const nodeId = "row-" + currNode.row + "-column" + currNode.column;
+        document.getElementById(nodeId).classList.add("visited");
+        //setNodes(updatedNodes);
+      }, 20 * i);
     }
   }
 
@@ -123,20 +125,22 @@ function PathGrid() {
         {nodes.map((row, rowIdx) => {
           return (
             <div key={rowIdx} className="row">
-              {row.map((node, nodeIdx) => (
-                <Node
-                  key={nodeIdx}
-                  isStart={node.isStart}
-                  isFinish={node.isFinish}
-                  isVisited={node.isVisited}
-                  isWall={node.isWall}
-                  row={node.row}
-                  column={node.column}
-                  handleMouseUp={handleMouseUp}
-                  handleMouseDown={handleMouseDown}
-                  handleMouseEnter={handleMouseEnter}
-                />
-              ))}
+              {row.map((node, nodeIdx) => {
+                return (
+                  <Node
+                    key={nodeIdx}
+                    isStart={node.isStart}
+                    isFinish={node.isFinish}
+                    isVisited={node.isVisited}
+                    isWall={node.isWall}
+                    row={node.row}
+                    column={node.column}
+                    handleMouseUp={handleMouseUp}
+                    handleMouseDown={handleMouseDown}
+                    handleMouseEnter={handleMouseEnter}
+                  />
+                );
+              })}
             </div>
           );
         })}
@@ -205,9 +209,13 @@ function Node(props) {
   const visitedClass = isVisited ? "visited" : "";
   const className = "column-2 node " + nodeTypeClass + " " + visitedClass;
 
+  //Id of the node
+  const nodeId = "row-" + row + "-column" + column;
+
   //Render node
   return (
     <div
+      id={nodeId}
       className={className}
       onMouseDown={() => handleMouseDown(row, column)}
       onMouseEnter={() => handleMouseEnter(row, column)}

@@ -1,0 +1,29 @@
+/* General Styles */
+h1 {
+  text-align: center;
+}
+
+.container-small {
+  max-width: 20rem;
+  text-align: center;
+}
+
+/* Grid and node animation styles */
+div.node {
+  width: 25px;
+  height: 25px;
+  outline: 1px solid gray;
+  display: inline-block;
+}
+
+div.start-node {
+  background-color: green;
+}
+
+div.end-node {
+  background-color: red;
+}
+
+div.visited {
+  background-color: blue;
+}

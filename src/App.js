@@ -106,7 +106,7 @@ function PathGrid() {
 
         //Update state
         setNodes(updatedNodes);
-      }, 0.0025 * i);
+      }, i);
     }
   }
 

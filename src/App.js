@@ -6,10 +6,11 @@ import "./PathGrid.css";
 
 const START_ROW = 15;
 const START_COLUMN = 25;
-const FINISH_ROW = 10;
-const FINISH_COLUMN = 30;
+const FINISH_ROW = 15;
+const FINISH_COLUMN = 40;
 const NUM_ROWS = 25;
 const NUM_COLUMNS = 50;
+const TIMER_DELAY = 10;
 
 function App() {
   return (
@@ -26,18 +27,29 @@ function PathGrid() {
   const [state, setState] = useState({
     nodes: setInitialNodesState(),
     isMousePressed: false,
+    animationBegun: false,
   });
 
   //Convenience [nodes, setNodes]
   const nodes = state.nodes;
   const setNodes = (newNodes) => {
-    setState({ nodes: newNodes, isMousePressed: state.isMousePressed });
+    console.log("From set nodes" + state.animationBegun);
+    setState({
+      nodes: newNodes,
+      isMousePressed: state.isMousePressed,
+      animationBegun: state.animationBegun,
+    });
   };
 
   //Mouse Handlers
 
-  //Pressing the mouse
+  //Handles the case when a node at row, col is pressed down on
   function handleMouseDown(row, column) {
+    //Only allowed if animation hasn't begun
+    if (state.animationBegun) return;
+
+    console.log(state.animationBegun);
+
     //Update the node at (row, column) with !isWall
     const updatedNodes = toggleWallForNode(row, column);
 
@@ -45,11 +57,15 @@ function PathGrid() {
     setState({
       nodes: updatedNodes,
       isMousePressed: true,
+      animationBegun: state.animationBegun,
     });
   }
 
-  //Hovering
+  //Handles the case when a node at row, col is hovered on
   function handleMouseEnter(row, column) {
+    //Only allowed if animation hasn't begun
+    if (state.animationBegun) return;
+
     //If hovering but mouse isn't pressed then don't do anything
     if (!state.isMousePressed) return;
 
@@ -60,17 +76,21 @@ function PathGrid() {
     setNodes(updatedNodes);
   }
 
-  //Releasing Mouse
+  //Handles the case when the mouse is let go off
   function handleMouseUp() {
+    //Only allowed if animation hasn't begun
+    if (state.animationBegun) return;
+
     //Update mousepressed state to be false
     setState({
       nodes: state.nodes,
       isMousePressed: false,
+      animationBegun: state.animationBegun,
     });
   }
 
-  //Toggle the isWall property for the node at the given row and column
-  //And return the updated 2D array of nodes
+  /* Toggle the isWall property for the node at the given row and column
+  And return the updated 2D array of nodes */
   function toggleWallForNode(row, column) {
     //Update the node at (row, column) with !isWall
     const updatedNodes = nodes.slice();
@@ -87,40 +107,104 @@ function PathGrid() {
 
   //Visualize Dijkstras function
   function visualizeDijkstras() {
-    const visitedNodesInOrder = dijkstras(nodes);
+    //Do nothing if already animated
+    if (state.animationBegun) return;
+
+    //Set animationBegun to true
+    setState({
+      ...state,
+      animationBegun: true,
+    });
+
+    const { visitedNodesInOrder, shortestPathSequence } = dijkstras(nodes);
 
     //Iterate through visited nodes in order and update state to animate
-    for (let i = 0; i < visitedNodesInOrder.length; i++) {
-      setTimeout(() => {
-        const currNode = visitedNodesInOrder[i];
-        const updatedNodes = nodes.slice();
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      //Animate shortest path sequence at the end
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(
+          () => animateShortestPathSequence(shortestPathSequence),
+          TIMER_DELAY * i
+        );
+        return;
+      }
 
-        //Create new node with isVisited as true
-        const updatedNode = {
-          ...currNode,
-          isVisited: true,
-        };
-
-        //Update node in nodes
-        updatedNodes[currNode.row][currNode.column] = updatedNode;
-
-        //Update state
-        const nodeId = "row-" + currNode.row + "-column" + currNode.column;
-        document.getElementById(nodeId).classList.add("visited");
-        //setNodes(updatedNodes);
-      }, 20 * i);
+      //Updating node to a visited node at a delay
+      setTimeout(() => visitNode(visitedNodesInOrder, i), TIMER_DELAY * i);
     }
+  }
+
+  //Animate shortest path sequence
+  function animateShortestPathSequence(shortestPathSequence) {
+    for (let i = 0; i < shortestPathSequence.length; i++) {
+      //Update node to a shortestPath node at a delay
+      setTimeout(
+        () => visitShortestPathNode(shortestPathSequence, i),
+        TIMER_DELAY * 10 * i
+      );
+    }
+  }
+
+  //Visit a single node at the given index
+  function visitNode(visitedNodesInOrder, index) {
+    const currNode = visitedNodesInOrder[index];
+
+    //Update state(having to access dom for performance issues)
+    const nodeId = "row-" + currNode.row + "-column" + currNode.column;
+    document.getElementById(nodeId).classList.add("visited");
+  }
+
+  //Visit a shortest path node at the given index
+  function visitShortestPathNode(shortestPathSequence, index) {
+    const currNode = shortestPathSequence[index];
+    let updatedNodes = state.nodes.slice();
+
+    //Create new and updated state with node marked as shortest path node
+    const updatedNode = {
+      ...currNode,
+      isShortestPathNode: true,
+      animationBegun: true,
+    };
+    updatedNodes[currNode.row][currNode.column] = updatedNode;
+
+    //Update state
+    setState({
+      nodes: updatedNodes,
+      isMousePressed: false,
+      animationBegun: true,
+    });
+  }
+
+  //Reset the grid to allow for new visualization
+  function resetGrid() {
+    //Reset the manual classes added(through the dom)
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = 0; j < nodes[i].length; j++) {
+        const nodeId = "row-" + i + "-column" + j;
+        if (nodes[i][j].isStart) {
+          document.getElementById(nodeId).className =
+            "column-2 node start-node";
+        } else if (nodes[i][j].isEnd) {
+          document.getElementById(nodeId).className = "column-2 node end-node";
+        } else {
+          document.getElementById(nodeId).className = "column-2 node";
+        }
+      }
+    }
+
+    setState({
+      nodes: setInitialNodesState(),
+      isMousePressed: false,
+      animationBegun: false,
+    });
   }
 
   return (
     <div>
-      <div className="container container-small">
-        <div className="row">
-          <div className="column column-100">
-            <button onClick={visualizeDijkstras}>Visualize</button>
-          </div>
-        </div>
-      </div>
+      <UserInput
+        visualizeDijkstras={visualizeDijkstras}
+        resetGrid={resetGrid}
+      />
       <div className="container">
         {nodes.map((row, rowIdx) => {
           return (
@@ -133,6 +217,7 @@ function PathGrid() {
                     isFinish={node.isFinish}
                     isVisited={node.isVisited}
                     isWall={node.isWall}
+                    isShortestPathNode={node.isShortestPathNode}
                     row={node.row}
                     column={node.column}
                     handleMouseUp={handleMouseUp}
@@ -176,9 +261,27 @@ function createNode(row, col) {
     isVisited: false,
     isWall: false,
     previousNode: null,
+    isShortestPathNode: false,
   };
 
   return currNode;
+}
+
+//Component for user input buttons
+function UserInput(props) {
+  const { visualizeDijkstras, resetGrid } = props;
+  return (
+    <div className="container container-small">
+      <div className="row">
+        <div className="column column-50">
+          <button onClick={visualizeDijkstras}>Visualize</button>
+        </div>
+        <div className="column column-50">
+          <button onClick={resetGrid}>Reset</button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 //Represents a single node/grid square in the grid
@@ -191,6 +294,7 @@ function Node(props) {
     row,
     column,
     isWall,
+    isShortestPathNode,
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
@@ -206,7 +310,11 @@ function Node(props) {
     : "";
 
   //Add on the visited css class if node has been visited(during animation)
-  const visitedClass = isVisited ? "visited" : "";
+  const visitedClass = isShortestPathNode
+    ? "shortest-path-node"
+    : isVisited
+    ? "visited"
+    : "";
   const className = "column-2 node " + nodeTypeClass + " " + visitedClass;
 
   //Id of the node

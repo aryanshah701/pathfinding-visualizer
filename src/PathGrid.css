@@ -4,7 +4,7 @@ h1 {
 }
 
 .container-small {
-  max-width: 20rem;
+  max-width: 30rem;
   text-align: center;
 }
 
@@ -38,6 +38,10 @@ div.visited {
 
 div.wall-node {
   background-color: rgb(12, 53, 71);
+}
+
+div.shortest-path-node {
+  background-color: yellowgreen;
 }
 
 /* Animations */

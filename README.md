@@ -2,4 +2,4 @@
 
 A react app that visualizes Dijkstra's pathfinding algorithm.
 
-Features are still being added to the project.
+[Check it out at my website!](pathfinder.aryanshah.tech)

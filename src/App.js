@@ -2,7 +2,7 @@ import { useState } from "react";
 import { dijkstras } from "./algorithms/dijkstras";
 
 import "milligram";
-import "./PathGrid.css";
+import "./PathfinderGrid.css";
 
 const START_ROW = 15;
 const START_COLUMN = 25;
@@ -33,7 +33,6 @@ function PathGrid() {
   //Convenience [nodes, setNodes]
   const nodes = state.nodes;
   const setNodes = (newNodes) => {
-    console.log("From set nodes" + state.animationBegun);
     setState({
       nodes: newNodes,
       isMousePressed: state.isMousePressed,
@@ -48,7 +47,19 @@ function PathGrid() {
     //Only allowed if animation hasn't begun
     if (state.animationBegun) return;
 
-    console.log(state.animationBegun);
+    //If start node hasn't been set, set it
+    if (!isStartNodeSet()) {
+      setNode(row, column, true, false);
+      return;
+    }
+
+    //If end node hasn't been set, set it
+    if (!isEndNodeSet()) {
+      setNode(row, column, false, true);
+      return;
+    }
+
+    //Add walls if both start and end node have been set
 
     //Update the node at (row, column) with !isWall
     const updatedNodes = toggleWallForNode(row, column);
@@ -61,12 +72,48 @@ function PathGrid() {
     });
   }
 
+  //Iterates through nodes in state to check if the start node has been set
+  function isStartNodeSet() {
+    for (const row of nodes) {
+      for (const node of row) {
+        if (node.isStart) return true;
+      }
+    }
+
+    return false;
+  }
+
+  //Iterates through nodes in state to check if the end node has been set
+  function isEndNodeSet() {
+    for (const row of nodes) {
+      for (const node of row) {
+        if (node.isFinish) return true;
+      }
+    }
+
+    return false;
+  }
+
+  //Updates the state once the start/end node has been selected
+  function setNode(row, column, toStart, toFinish) {
+    //A node cannot be both the starting and ending node
+    if (toStart && toStart) return;
+
+    const updatedNodes = nodes.slice();
+    const currNode = updatedNodes[row][column];
+    const newNode = {
+      ...currNode,
+      isStart: toStart,
+      isFinish: toFinish,
+    };
+  }
+
   //Handles the case when a node at row, col is hovered on
   function handleMouseEnter(row, column) {
-    //Only allowed if animation hasn't begun
+    //If animation hasn't begun don't do anything
     if (state.animationBegun) return;
 
-    //If hovering but mouse isn't pressed then don't do anything
+    //If hovering but mouse isn't pressed don't do anything
     if (!state.isMousePressed) return;
 
     //Update the node at (row, column) with !isWall

@@ -98,8 +98,8 @@ function sortNodesByDistance(nodes) {
 }
 
 //Searches for the node with the given start and finish booleans
-function getNode(nodes, start, finish) {
-  let filterdNodes = nodes.map((row) => {
+export function getNode(nodes, start, finish) {
+  const filterdNodes = nodes.map((row) => {
     return row.filter((node) => {
       return node.isStart === start && node.isFinish === finish;
     });

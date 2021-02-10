@@ -1,7 +1,13 @@
 /* General Styles */
-h1 {
+#directions {
+  font-weight: normal;
+  max-width: 60rem;
+  margin-bottom: 3rem;
+}
+
+h2 {
   text-align: center;
-  margin: 0.5em;
+  margin: 3rem;
 }
 
 .container-small {
@@ -18,11 +24,13 @@ div.node {
 }
 
 div.start-node {
-  background-color: green;
+  background-color: #f012be;
+  transition: background-color 0.5s;
 }
 
 div.end-node {
-  background-color: red;
+  background-color: #ff4136;
+  transition: background-color 0.5s;
 }
 
 div.visited {
@@ -42,7 +50,8 @@ div.wall-node {
 }
 
 div.shortest-path-node {
-  background-color: yellowgreen;
+  background-color: #ff851b;
+  transition: background-color 0.1s;
 }
 
 /* Animations */

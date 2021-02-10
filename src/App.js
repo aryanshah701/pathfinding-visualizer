@@ -4,10 +4,6 @@ import { dijkstras } from "./algorithms/dijkstras";
 import "milligram";
 import "./PathfinderGrid.css";
 
-const START_ROW = 15;
-const START_COLUMN = 25;
-const FINISH_ROW = 15;
-const FINISH_COLUMN = 40;
 const NUM_ROWS = 25;
 const NUM_COLUMNS = 50;
 const TIMER_DELAY = 10;
@@ -15,9 +11,20 @@ const TIMER_DELAY = 10;
 function App() {
   return (
     <div>
-      <h1>Dijkstra's Visualizer</h1>
+      <h2>Dijkstra's Visualizer - A Pathfinding Algorithm</h2>
+      <Directions />
       <PathGrid />
     </div>
+  );
+}
+
+function Directions() {
+  return (
+    <ol id="directions" class="container">
+      <li>Please select a start point and an end point.</li>
+      <li>Play around with walls by clicking and dragging your mouse.</li>
+      <li>Click visualize to see Dijkstra's in action!</li>
+    </ol>
   );
 }
 
@@ -49,6 +56,7 @@ function PathGrid() {
 
     //If start node hasn't been set, set it
     if (!isStartNodeSet()) {
+      console.log("start");
       setNode(row, column, true, false);
       return;
     }
@@ -97,7 +105,7 @@ function PathGrid() {
   //Updates the state once the start/end node has been selected
   function setNode(row, column, toStart, toFinish) {
     //A node cannot be both the starting and ending node
-    if (toStart && toStart) return;
+    if (toStart && toFinish) return;
 
     const updatedNodes = nodes.slice();
     const currNode = updatedNodes[row][column];
@@ -106,6 +114,11 @@ function PathGrid() {
       isStart: toStart,
       isFinish: toFinish,
     };
+    updatedNodes[row][column] = newNode;
+
+    //Update state
+    setNodes(updatedNodes);
+    console.log(nodes);
   }
 
   //Handles the case when a node at row, col is hovered on
@@ -156,6 +169,9 @@ function PathGrid() {
   function visualizeDijkstras() {
     //Do nothing if already animated
     if (state.animationBegun) return;
+
+    //Do nothing if start and end node haven't been set
+    if (!isStartNodeSet() && !isEndNodeSet()) return;
 
     //Set animationBegun to true
     setState({
@@ -302,8 +318,10 @@ function createNode(row, col) {
   let currNode = {
     row: row,
     column: col,
-    isStart: row === START_ROW && col === START_COLUMN,
-    isFinish: row === FINISH_ROW && col === FINISH_COLUMN,
+    //isStart: row === START_ROW && col === START_COLUMN,
+    //isFinish: row === FINISH_ROW && col === FINISH_COLUMN,
+    isStart: false,
+    isFinish: false,
     distance: Infinity,
     isVisited: false,
     isWall: false,

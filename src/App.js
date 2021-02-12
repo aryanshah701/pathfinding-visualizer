@@ -20,7 +20,7 @@ function App() {
 
 function Directions() {
   return (
-    <ol id="directions" class="container">
+    <ol id="directions" className="container">
       <li>Please select a start point and an end point.</li>
       <li>Play around with walls by clicking and dragging your mouse.</li>
       <li>Click visualize to see Dijkstra's in action!</li>
@@ -56,7 +56,6 @@ function PathGrid() {
 
     //If start node hasn't been set, set it
     if (!isStartNodeSet()) {
-      console.log("start");
       setNode(row, column, true, false);
       return;
     }
@@ -118,7 +117,6 @@ function PathGrid() {
 
     //Update state
     setNodes(updatedNodes);
-    console.log(nodes);
   }
 
   //Handles the case when a node at row, col is hovered on

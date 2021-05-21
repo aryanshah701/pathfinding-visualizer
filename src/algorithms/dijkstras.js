@@ -51,7 +51,6 @@ function getShortestPath(nodes) {
 
   //Backtrack till we reach the start node
   while (currNode && !areEqualNodes(currNode, startNode)) {
-    console.log("in");
     //Add currNode into the path
     shortestPath.push(currNode);
 

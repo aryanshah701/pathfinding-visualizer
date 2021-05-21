@@ -6,4 +6,4 @@
 
 A react app that visualizes Dijkstra's pathfinding algorithm.
 
-[Check it out on my website!](http://pathfinder.aryanshah.tech/) (Recommended browsers are chrome and firefox).
+[Check it out on my website!](https://pathfinder.aryanshah.tech/) (Recommended browsers are chrome and firefox).

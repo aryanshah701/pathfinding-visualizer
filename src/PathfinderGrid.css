@@ -55,6 +55,7 @@ div.shortest-path-node {
 }
 
 /* Animations */
+/* Taken from Clement Mihailescu's github @ https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial*/
 @keyframes visitedAnimation {
   0% {
     transform: scale(0.3);
